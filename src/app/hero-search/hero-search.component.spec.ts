@@ -1,25 +1,24 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 import { HeroSearchComponent } from './hero-search.component';
-import { HeroService } from '../hero.service';
-import { HEROES } from '../mock-heroes';
+import { CommonModule } from '@angular/common';
+import { Hero } from '../hero';
 
 describe('HeroSearchComponent', () => {
   let component: HeroSearchComponent;
   let fixture: ComponentFixture<HeroSearchComponent>;
-  let heroService;
-  let getHeroesSpy: jasmine.Spy;
+  let testHeroes$!: Observable<Hero[]>;
 
   beforeEach(waitForAsync(() => {
-    heroService = jasmine.createSpyObj('HeroService', ['getHeroes']);
-    getHeroesSpy = heroService.getHeroes.and.returnValue(of(HEROES));
+    spyOn(Subject.prototype, 'pipe')
+      .and.returnValue(testHeroes$);
+
     TestBed
       .configureTestingModule({
-        declarations: [HeroSearchComponent, HeroSearchComponent],
-        imports: [RouterTestingModule.withRoutes([])],
-        providers: [{ provide: HeroService, useValue: heroService }]
+        declarations: [HeroSearchComponent],
+        imports: [RouterTestingModule.withRoutes([]), CommonModule],
       })
       .compileComponents();
   }));
@@ -32,5 +31,6 @@ describe('HeroSearchComponent', () => {
 
   it('should be created', () => {
     expect(component).toBeTruthy();
+    expect(Subject.prototype.pipe).toHaveBeenCalled();
   });
 });
